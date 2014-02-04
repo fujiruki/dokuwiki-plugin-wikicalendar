@@ -11,6 +11,9 @@ if(!defined('DOKU_INC')) die();
 if(!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN', DOKU_INC.'lib/plugins/');
 if(!defined('DOKU_LF')) define('DOKU_LF', "\n");
 
+// plugin's directory
+define('PLUGIN_DIR', DOKU_PLUGIN. 'dokuwiki-plugin-wikicalendar/');
+
 require_once(DOKU_PLUGIN.'action.php');
 
 /**
@@ -35,7 +38,17 @@ class action_plugin_wikicalendar extends DokuWiki_Action_Plugin {
         $controller->register_hook('ACTION_SHOW_REDIRECT', 'BEFORE', $this, 'handle_redirect');
         $controller->register_hook('HTML_EDITFORM_OUTPUT', 'BEFORE', $this, 'handle_form');
         $controller->register_hook('DOKUWIKI_STARTED', 'BEFORE', $this, 'handle_started');
+        // add a css for the calendar
+        $controller->register_hook('TPL_METAHEADER_OUTPUT', 'BEFORE', $this, '_hooksh');
     }
+
+    public function _hooksh(Doku_Event &$event, $param) {
+        // Add wikicalendar's stylesheets. At least two, shCore.css and a theme.
+        $event->data['link'][] = array( 'rel'   => 'stylesheet',
+            'type'  => 'text/css',
+            'href'  => (DOKU_BASE . PLUGIN_DIR)
+            );
+	}
 
     /**
      * Checks for calendar values for proper redirects
